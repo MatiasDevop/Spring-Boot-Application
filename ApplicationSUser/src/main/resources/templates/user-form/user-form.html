@@ -1,12 +1,12 @@
 <!--  <div th:with="disableFields=!${editMode} and ${#authorization.expression('hasRole(''ROLE_USER'')')}">-->
 
-<form class="form" role="form" autocomplete="off" method="post">
+<form class="form" role="form" autocomplete="off" th:object="${userForm}" method="post">
 	
 	
 	<div class="form-group row">
 		<label class="col-lg-3 col-form-label form-control-label">First name</label>
 		<div class="col-lg-9">
-			<input class="form-control" type="text">
+			<input class="form-control" type="text" th:field="${userForm.firstName}">
 					<div class="alert-danger">Name Error</div>
 	
 		</div>
@@ -15,7 +15,7 @@
 		<label class="col-lg-3 col-form-label form-control-label">Last
 			name</label>
 		<div class="col-lg-9">
-			<input class="form-control" type="text">
+			<input class="form-control" type="text" th:field="${userForm.lastName}">
 			<div class="alert-danger" >Name Error</div>
 	
 		</div>
@@ -23,22 +23,22 @@
 	<div class="form-group row">
 		<label class="col-lg-3 col-form-label form-control-label">Email</label>
 		<div class="col-lg-9">
-			<input class="form-control" type="email" >
+			<input class="form-control" type="email" th:field="${userForm.email}">
 			<div class="alert-danger">Name Error</div>
 		</div>
 	</div>
 	<div class="form-group row">
 		<label class="col-lg-3 col-form-label form-control-label">Username</label>
 		<div class="col-lg-9">
-			<input class="form-control" type="text" >
+			<input class="form-control" type="text" th:field="${userForm.username}">
 			<div class="alert-danger">Name Error</div>
 		</div>
 	</div>
 	<div class="form-group row">
 		<label th:text="Roles" class="col-lg-3 col-form-label form-control-label"></label>
 		<div class="col-lg-9">
-			<select class="form-control" >
-				<option>
+			<select class="form-control" th:field="${userForm.roles}" size="3">
+				<option th:each="role :${roles}" th:value="${role.id}" th:text="${role.name}">
 				</option>
 			</select>
 			<div class="alert-danger">Name Error</div>
@@ -48,14 +48,14 @@
 	<div class="form-group row">
 		<label class="col-lg-3 col-form-label form-control-label">Password</label>
 		<div class="col-lg-9">
-			<input class="form-control" type="password" >
+			<input class="form-control" type="password" th:field="${userForm.password}">
 			<div class="alert-danger" >Name Error</div>
 		</div>
 	</div>
 	<div class="form-group row">
 		<label class="col-lg-3 col-form-label form-control-label">Confirm</label>
 		<div class="col-lg-9">
-			<input class="form-control" type="password" >
+			<input class="form-control" type="password" th:field="${userForm.confirmPassword}">
 			<div class="alert-danger" >Name Error</div>
 		</div>
 	</div>
