@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.nest.appuser.entity.User;
@@ -65,7 +66,7 @@ public class UserController {
 		model.addAttribute("roles",roleRepository.findAll());
 		return "user-form/user-view";
 	}
-	
+
 	@GetMapping("/editUser/{id}")
 	public String getEditUserForm(Model model, @PathVariable(name="id") Long id) throws Exception {
 		
@@ -112,6 +113,7 @@ public class UserController {
 	public String cancelEditUser(ModelMap model) {
 		return "redirect:/userForm";
 	}
+
 }
 
 
