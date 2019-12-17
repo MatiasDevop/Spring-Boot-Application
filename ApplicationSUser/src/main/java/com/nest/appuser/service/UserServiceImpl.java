@@ -75,20 +75,14 @@ public class UserServiceImpl implements UserService{
 		to.setEmail(from.getEmail());
 		to.setRoles(from.getRoles());
 
-		if(!user.getPassword().equals(user.getConfirmPassword())) {
-			throw new Exception("password and confirm are not equals");
-		}
-		return true;
 	}
 
 	@Override
-	public User createUser(User user) throws Exception {
+	public void deleteUser(Long id) throws Exception {
 		// TODO Auto-generated method stub
-		if(checkUsernameAvailable(user) && checkPasswordMatch(user)) {
-			user = repository.save(user);
-		}
-		return user;
-
+		User user = getUserById(id);
+		repository.delete(user);
 	}
+	
 
 }
