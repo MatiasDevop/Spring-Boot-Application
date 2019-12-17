@@ -30,6 +30,9 @@ public class UserServiceImpl implements UserService{
 	}
 	private boolean checkPasswordMatch(User user) throws Exception
 	{
+		if (user.getConfirmPassword() == null || user.getConfirmPassword().isEmpty()) {
+			throw new Exception("Confirm password is must");
+		}
 		if(!user.getPassword().equals(user.getConfirmPassword())) {
 			throw new Exception("password and confirm are not equals");
 		}
@@ -43,6 +46,34 @@ public class UserServiceImpl implements UserService{
 			user = repository.save(user);
 		}
 		return user;
+	}
+
+	@Override
+	public User getUserById(Long id) throws Exception {
+		// TODO Auto-generated method stub
+		return repository.findById(id).orElseThrow(() -> new Exception("User to edit dosen't exist."));
+	}
+
+	@Override
+	public User updateUser(User user) throws Exception {
+		// TODO Auto-generated method stub
+		User toUser = getUserById(user.getId());
+		mapUser(user, toUser);
+		return repository.save(toUser);
+		
+	}
+	 
+	/**
+	 * Map everythin but the password.
+	 * @param from
+	 * @param to
+	 */
+	protected void mapUser(User from, User to) {
+		to.setUsername(from.getUsername());
+		to.setFirstName(from.getFirstName());
+		to.setLastName(from.getLastName());
+		to.setEmail(from.getEmail());
+		to.setRoles(from.getRoles());
 	}
 
 }
