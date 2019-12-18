@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.nest.appuser.dto.ChangePasswordForm;
 import com.nest.appuser.entity.User;
 import com.nest.appuser.repository.UserRepository;
 
@@ -82,6 +83,26 @@ public class UserServiceImpl implements UserService{
 		// TODO Auto-generated method stub
 		User user = getUserById(id);
 		repository.delete(user);
+	}
+
+	@Override
+	public User changePassword(ChangePasswordForm form) throws Exception {
+		// TODO Auto-generated method stub
+		User user = getUserById(form.getId());
+		
+		if(!user.getPassword().equals(form.getCurrentPassword())) {
+			throw new Exception("Current Password invalid. ");
+		}
+		if(user.getPassword().equals(form.getNewPassword())) {
+			throw new Exception("New it must be difirent at before");
+		}
+		if(!form.getNewPassword().equals(form.getConfirmPassword())) {
+			throw new Exception("New password and current password not matching ");
+		}
+		
+		user.setPassword(form.getNewPassword());
+		return repository.save(user);
+		
 	}
 	
 
