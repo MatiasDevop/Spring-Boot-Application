@@ -53,7 +53,7 @@ public class User implements Serializable {
 	private String confirmPassword;
 	
 	@Size(min=1)
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY) //this is like Lazy loadinf only each time tha you need use them
 	@JoinTable(name = "user_roles",
 			joinColumns=@JoinColumn(name="user_id"),
 			inverseJoinColumns=@JoinColumn(name="role_id"))

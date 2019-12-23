@@ -3,6 +3,10 @@ package com.nest.appuser.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.nest.appuser.dto.ChangePasswordForm;
@@ -15,6 +19,9 @@ public class UserServiceImpl implements UserService{
 
 	@Autowired // is to not do a new....
 	UserRepository repository;
+	
+	@Autowired
+	BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Override
 	public Iterable<User> getAllUserss() {
@@ -44,6 +51,10 @@ public class UserServiceImpl implements UserService{
 	public User createUser(User user) throws Exception {
 		// TODO Auto-generated method stub
 		if(checkUsernameAvailable(user) && checkPasswordMatch(user)) {
+			
+			String encodePassword = bCryptPasswordEncoder.encode(user.getPassword());
+			user.setPassword(encodePassword);// to encryp passwot at create user
+			
 			user = repository.save(user);
 		}
 		return user;
@@ -79,6 +90,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')") // this is to acces services rest 
 	public void deleteUser(Long id) throws Exception {
 		// TODO Auto-generated method stub
 		User user = getUserById(id);
@@ -90,19 +102,36 @@ public class UserServiceImpl implements UserService{
 		// TODO Auto-generated method stub
 		User user = getUserById(form.getId());
 		
-		if(!user.getPassword().equals(form.getCurrentPassword())) {
+		if(!isLoggedUserADMIN() && !user.getPassword().equals(form.getCurrentPassword())) {
 			throw new Exception("Current Password invalid. ");
 		}
 		if(user.getPassword().equals(form.getNewPassword())) {
 			throw new Exception("New it must be difirent at before");
 		}
 		if(!form.getNewPassword().equals(form.getConfirmPassword())) {
-			throw new Exception("New password and current password not matching ");
+			throw new Exception("New password and current password not matching");
 		}
-		
-		user.setPassword(form.getNewPassword());
+		// to encrypt password when change it
+		String encodePassword = bCryptPasswordEncoder.encode(form.getNewPassword());
+		user.setPassword(encodePassword);
 		return repository.save(user);
 		
+	}
+	public boolean isLoggedUserADMIN(){
+		 return loggedUserHasRole("ROLE_ADMIN");
+	}
+	public boolean loggedUserHasRole(String role) {
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		UserDetails loggedUser = null;
+		Object roles = null; 
+		if (principal instanceof UserDetails) {
+			loggedUser = (UserDetails) principal;
+		
+			roles = loggedUser.getAuthorities().stream()
+					.filter(x -> role.equals(x.getAuthority() ))      
+					.findFirst().orElse(null); //loggedUser = null;
+		}
+		return roles != null ?true :false;
 	}
 	
 
