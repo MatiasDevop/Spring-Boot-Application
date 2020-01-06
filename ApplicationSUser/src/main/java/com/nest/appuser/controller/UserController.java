@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.nest.appuser.Exception.UsernameOrIdNotFound;
 import com.nest.appuser.dto.ChangePasswordForm;
 import com.nest.appuser.entity.User;
 import com.nest.appuser.repository.RoleRepository;
@@ -127,7 +128,8 @@ public class UserController {
 	public String deleteUser(Model model, @PathVariable(name="id") Long id) {
 		try {
 			userService.deleteUser(id);
-		} catch (Exception e) {
+			
+		} catch (UsernameOrIdNotFound e) {// this works when you are as userNormal no adminUser role and it's forbideen
 			// TODO: handle exception
 			model.addAttribute("listErrorMessage", e.getMessage());
 		}

@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.nest.appuser.Exception.UsernameOrIdNotFound;
 import com.nest.appuser.dto.ChangePasswordForm;
 import com.nest.appuser.entity.User;
 import com.nest.appuser.repository.UserRepository;
@@ -61,9 +62,9 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public User getUserById(Long id) throws Exception {
+	public User getUserById(Long id) throws UsernameOrIdNotFound {
 		// TODO Auto-generated method stub
-		return repository.findById(id).orElseThrow(() -> new Exception("User to edit dosen't exist."));
+		return repository.findById(id).orElseThrow(() -> new UsernameOrIdNotFound("The ID user dosen't exist."));
 	}
 
 	@Override
@@ -91,7 +92,7 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN')") // this is to acces services rest 
-	public void deleteUser(Long id) throws Exception {
+	public void deleteUser(Long id) throws UsernameOrIdNotFound {
 		// TODO Auto-generated method stub
 		User user = getUserById(id);
 		repository.delete(user);
@@ -121,7 +122,7 @@ public class UserServiceImpl implements UserService{
 		 return loggedUserHasRole("ROLE_ADMIN");
 	}
 	public boolean loggedUserHasRole(String role) {
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();// to get user recorded in session
 		UserDetails loggedUser = null;
 		Object roles = null; 
 		if (principal instanceof UserDetails) {
