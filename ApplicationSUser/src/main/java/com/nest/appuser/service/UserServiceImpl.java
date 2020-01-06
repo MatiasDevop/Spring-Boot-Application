@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.nest.appuser.Exception.CustomFielValidationException;
 import com.nest.appuser.Exception.UsernameOrIdNotFound;
 import com.nest.appuser.dto.ChangePasswordForm;
 import com.nest.appuser.entity.User;
@@ -33,17 +34,18 @@ public class UserServiceImpl implements UserService{
 	private boolean checkUsernameAvailable(User user) throws Exception {
 		Optional<User> userFound = repository.findByUsername(user.getUsername());
 		if(userFound.isPresent()) {
-			throw new Exception("Username unable");
+			throw new CustomFielValidationException("Username unable", "username");
 		}
 		return true;
 	}
 	private boolean checkPasswordMatch(User user) throws Exception
 	{
 		if (user.getConfirmPassword() == null || user.getConfirmPassword().isEmpty()) {
-			throw new Exception("Confirm password is must");
+			throw new CustomFielValidationException("Confirm password is must", "confirmPassword");
 		}
+		
 		if(!user.getPassword().equals(user.getConfirmPassword())) {
-			throw new Exception("password and confirm are not equals");
+			throw new CustomFielValidationException("password and confirm are not equals", "password");
 		}
 		return true;
 	}
@@ -133,6 +135,23 @@ public class UserServiceImpl implements UserService{
 					.findFirst().orElse(null); //loggedUser = null;
 		}
 		return roles != null ?true :false;
+	}
+	//HOw yo use the User Logued since session and transfor in own application
+	private User getLoggedUser() throws Exception {
+		//Get User logeado
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		UserDetails loggedUser = null;
+
+		//Verify that that object getting from session and is User
+		if (principal instanceof UserDetails) {
+			loggedUser = (UserDetails) principal;
+		}
+		
+		User myUser = repository
+				.findByUsername(loggedUser.getUsername()).orElseThrow(() -> new Exception(""));
+		
+		return myUser;
 	}
 	
 

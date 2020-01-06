@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.nest.appuser.Exception.CustomFielValidationException;
 import com.nest.appuser.Exception.UsernameOrIdNotFound;
 import com.nest.appuser.dto.ChangePasswordForm;
 import com.nest.appuser.entity.User;
@@ -59,7 +60,16 @@ public class UserController {
 				model.addAttribute("userForm", new User());
 				model.addAttribute("listTab","active");
 				
-			} catch (Exception e) {
+			}catch (CustomFielValidationException cfve) {
+				result.rejectValue(cfve.getFieldName(), null, cfve.getMessage()); // this is to change error o save on input and shows it
+				model.addAttribute("formErrorMessage", cfve.getMessage());
+				model.addAttribute("userForm", user);
+				model.addAttribute("formTab","active");
+				model.addAttribute("userList", userService.getAllUserss());
+				model.addAttribute("roles",roleRepository.findAll());
+			} 
+			
+			catch (Exception e) {
 				model.addAttribute("formErrorMessage", e.getMessage());
 				model.addAttribute("userForm", user);
 				model.addAttribute("formTab","active");
